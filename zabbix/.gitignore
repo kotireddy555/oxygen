@@ -1,0 +1,3 @@
+# Files which we dont want to get uploaded to GHE
+resources.txt
+terragrunt-show.txt

@@ -1,0 +1,19 @@
+pipeline {
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        cron '@weekly'
+    }
+
+    stages {
+        stage('ECS Cluster') {
+            steps {
+                echo 'Use Terraform to rotate the servers in your ECS Cluster'
+            }
+        }
+    }
+}

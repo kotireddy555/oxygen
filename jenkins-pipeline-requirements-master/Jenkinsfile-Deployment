@@ -1,0 +1,47 @@
+pipeline {
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        choice choices: ['dev', 'itg', 'pro'], description: 'Which environment to deploy to', name: 'env'
+    }
+
+    stages {
+        stage("Update Build's Display Name") {
+            steps {
+                script {
+                    currentBuild.displayName = "#${env.BUILD_NUMBER} - ${params.env}"
+                }
+            }
+        }
+
+        stage('RDS') {
+            steps {
+                echo 'Use Terraform to provision/update RDS instance'
+                echo 'Run DB migrations'
+            }
+        }
+
+        stage('ECS Cluster') {
+            steps {
+                echo 'Use Terraform to provision/update your ECS Cluster'
+            }
+        }
+
+        stage('ECS Service') {
+            steps {
+                echo 'Use Terraform to provision/update your ECS Service'
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                echo 'Smoke Test your deployment, make sure it is working properly'
+                echo 'Rollback deployment if smoke test fails'
+            }
+        }
+    }
+}

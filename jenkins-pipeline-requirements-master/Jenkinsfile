@@ -1,0 +1,92 @@
+pipeline {
+    agent none
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('SCM') {
+            steps {
+                echo 'The first stage should checkout your code from SCM'
+            }
+        }
+
+        stage('Build/Test Code') {
+            steps {
+                echo 'Build your code, make sure that it compiles'
+                echo 'Run unit/integration tests'
+                echo 'Build deployment artifacts'
+            }
+        }
+
+        stage('Code Assessment') {
+            steps {
+                echo 'Scan your code for code coverage using SonarQube'
+                echo 'Scan your code for security vulnerabilities using Veracode'
+                echo 'Scan your code for following coding guidelines using SonarLint'
+                echo 'Scan your code for viruses'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                echo 'Provision Docker repository'
+                echo 'Build your Docker container'
+                echo 'Tag your container'
+                echo 'Push to your Docker repository'
+                echo 'Scan your Docker image for vulnerabilities using Anchore Engine'
+            }
+        }
+
+        stage('Deploy To Development Environment') {
+            steps {
+                echo 'Call Deployment Job, passing in development environment\'s variables'
+
+                build job: 'Deploy', parameters: [
+                        string(name: 'env', value: 'dev'),
+                ]
+            }
+        }
+
+        stage('Regression Test') {
+            steps {
+                echo 'Run regression tests against your Dev environment'
+            }
+        }
+
+        stage('Prompt for deployment to Intergration Environment') {
+            options { timeout(time: 1, unit: 'HOURS') }
+            steps {
+                input 'Prompt user for approval to deploy to ITG environment'
+            }
+        }
+
+        stage('Deploy To Intergration Environment') {
+            steps {
+                echo 'Call Deployment Job, passing in ITG environment\'s variables'
+
+                build job: 'Deploy', parameters: [
+                        string(name: 'env', value: 'itg'),
+                ]
+            }
+        }
+
+        stage('Prompt for deployment to Production Environment') {
+            options { timeout(time: 1, unit: 'HOURS') }
+            steps {
+                input 'Prompt user for approval to deploy to PRO environment'
+            }
+        }
+
+        stage('Deploy To Production Environment') {
+            steps {
+                echo 'Call Deployment Job, passing in PRO environment\'s variables'
+
+                build job: 'Deploy', parameters: [
+                        string(name: 'env', value: 'pro'),
+                ]
+            }
+        }
+    }
+}

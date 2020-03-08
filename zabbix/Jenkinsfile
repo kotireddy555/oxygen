@@ -1,0 +1,37 @@
+pipeline {
+    agent {label 'ecs'}
+
+    stages {
+        stage('AWS Lambda') {
+            steps {
+                dir('devops/terraform/dev/lambda-for-zabbix') {
+                    script {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'mssi-devops-admin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                            sh 'terragrunt get --terragrunt-source-update'
+                            sh 'terragrunt plan'
+                            sh 'terragrunt apply'
+                        }
+                    }
+                }
+            }
+        }
+        stage('AWS Clouwatch') {
+            steps {
+                dir('devops/terraform/dev/cloudwatch-alerts') {
+                    script {
+                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'mssi-devops-admin', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
+                            sh 'terragrunt get --terragrunt-source-update'
+                            sh 'terragrunt plan'
+                            sh 'terragrunt apply'
+                        }
+                    }
+                }
+            }
+        }
+    }
+/*    post {
+        always {
+            step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'amit.kumar7@hp.com', sendToIndividuals: false])
+        }
+    } */
+}
