@@ -1,16 +1,3 @@
-module "tags" {
-  source = "../hp-it-infra-enabled-tags"
-
-  environment = "${var.environment}"
-  tag_contact_email = "${var.tag_contact_email}"
-  tag_cost_center = "${var.tag_cost_center}"
-  tag_name = "${var.app_name}"
-  tag_criticality = "${var.tag_criticality}"
-  tag_app_name = "${var.tag_app_name}"
-  tag_eprid = "${var.tag_eprid}"
-  tag_location_code = "${var.tag_location_code}"
-  tag_mru = "${var.tag_mru}"
-}
 
 resource "aws_instance" "ec2" {
   ami = "${var.ami}"
@@ -33,4 +20,4 @@ resource "aws_instance" "ec2" {
     Owner = "EPRID:${var.tag_eprid}+Name:${var.app_name}+Contact:${var.tag_contact_email}",
     CostManagement = "CostCenter:${var.tag_cost_center}+MRU:${var.tag_mru}+LocationCode:${var.tag_location_code}"
   }
-}
+} 
