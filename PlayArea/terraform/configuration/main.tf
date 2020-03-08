@@ -1,5 +1,5 @@
 module "ec2" {
-  source = "git::ssh://git@github.azc.ext.hp.com/MSSI-DevOps/TerraformModules.git//ec2?ref=master"
+  source = "git::ssh://git@github.com/kotireddy555/oxygen.git//ec2?ref=master"
 
    name                   = "ARC"
    ami                    = "ami-ebd02392"
